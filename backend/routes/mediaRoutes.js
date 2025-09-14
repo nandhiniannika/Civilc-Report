@@ -6,7 +6,8 @@ import {
   deleteMedia,
   getMediaByReport
 } from "../controllers/mediaController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
+import { authMiddleware, adminOnly } from "../middleware/authMiddleware.js"; // ✅ named imports
+
 
 const router = express.Router();
 

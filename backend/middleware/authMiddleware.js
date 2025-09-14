@@ -1,18 +1,14 @@
 import jwt from "jsonwebtoken";
-import User from "../models/User.js"; // ensure this file exists!
+import User from "../models/User.js";
 
-// 🔒 Authenticate user
 export const authMiddleware = async (req, res, next) => {
   try {
     const auth = req.headers.authorization;
-    if (!auth || !auth.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+    if (!auth || !auth.startsWith("Bearer ")) return res.status(401).json({ message: "Unauthorized" });
 
     const token = auth.split(" ")[1];
-    const payload = jwt.verify(token, process.env.JWT_SECRET || "replace_this_with_a_secure_secret");
+    const payload = jwt.verify(token, process.env.JWT_SECRET || "replace_this_with_secure_secret");
 
-    // Fetch user (adjust to match your User model)
     const user = await User.findById(payload.id).select("-password");
     if (!user) return res.status(401).json({ message: "Unauthorized" });
 
@@ -24,7 +20,6 @@ export const authMiddleware = async (req, res, next) => {
   }
 };
 
-// 👑 Restrict to admins
 export const adminOnly = (req, res, next) => {
   if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
