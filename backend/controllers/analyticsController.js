@@ -9,6 +9,7 @@ export const getReportsByCategory = async (req, res) => {
     ]);
     res.json(data);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -22,6 +23,7 @@ export const getReportsByStatus = async (req, res) => {
     ]);
     res.json(data);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -40,6 +42,7 @@ export const getReportsTrend = async (req, res) => {
     ]);
     res.json(data);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -48,7 +51,7 @@ export const getReportsTrend = async (req, res) => {
 export const getAvgResolutionTime = async (req, res) => {
   try {
     const data = await Report.aggregate([
-      { $match: { resolvedAt: { $exists: true } } },
+      { $match: { resolvedAt: { $exists: true, $ne: null } } },
       {
         $project: {
           resolutionTime: { $subtract: ["$resolvedAt", "$createdAt"] },
@@ -71,6 +74,7 @@ export const getAvgResolutionTime = async (req, res) => {
 
     res.json({ avgResolutionDays: avgDays.toFixed(2) });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };

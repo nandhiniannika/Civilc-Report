@@ -14,12 +14,12 @@ const reportSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      required: true, // Example: "Pothole", "Streetlight", "Garbage"
+      required: true, // Example: "pothole", "streetlight", "garbage"
     },
     status: {
       type: String,
-      enum: ["Pending", "Acknowledged", "In Progress", "Resolved", "Rejected"],
-      default: "Pending",
+      enum: ["pending", "acknowledged", "in_progress", "resolved", "rejected", "closed"],
+      default: "pending",
     },
     location: {
       type: {
@@ -50,6 +50,15 @@ const reportSchema = new mongoose.Schema(
     resolvedAt: {
       type: Date,
     },
+    activity: [
+      {
+        action: String,
+        actorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        actorName: String,
+        note: String,
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true } // auto-creates createdAt & updatedAt
 );

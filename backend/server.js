@@ -1,10 +1,10 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const morgan = require("morgan");
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import morgan from "morgan";
 
-// Load env vars
+// Load environment variables
 dotenv.config();
 
 // Initialize app
@@ -16,8 +16,8 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 // Routes
-const authRoutes = require("./routes/authRoutes");
-const analyticsRoutes = require("./routes/analyticsRoutes");
+import authRoutes from "./routes/authRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 app.use("/api/auth", authRoutes);
 app.use("/api/analytics", analyticsRoutes);
@@ -34,9 +34,8 @@ console.log("Loaded MONGO_URI:", process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI, {})
     .then(() => {
         console.log("✅ MongoDB Connected");
-        app.listen(PORT, () =>
+        app.listen(PORT, () => 
             console.log(`🚀 Server running on port ${PORT}`)
         );
     })
     .catch((err) => console.error("❌ MongoDB Connection Error:", err));
-
