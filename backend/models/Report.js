@@ -30,21 +30,25 @@ const reportSchema = new mongoose.Schema(
       coordinates: {
         type: [Number], // [longitude, latitude]
         required: true,
+        validate: {
+          validator: (v) => v.length === 2,
+          message: "Coordinates must be [longitude, latitude]",
+        },
       },
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // links to the User model
+      ref: "User",
       required: true,
     },
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Department", // links to Department model
+      ref: "Department",
     },
     media: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Media", // uploaded images/videos
+        ref: "Media",
       },
     ],
     resolvedAt: {
@@ -60,10 +64,10 @@ const reportSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true } // auto-creates createdAt & updatedAt
+  { timestamps: true }
 );
 
-reportSchema.index({ location: "2dsphere" }); // for geo queries
+reportSchema.index({ location: "2dsphere" });
 
 const Report = mongoose.model("Report", reportSchema);
 
