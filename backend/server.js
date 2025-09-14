@@ -1,26 +1,42 @@
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import morgan from "morgan";
-import connectDB from "./config/db.js";
-import analyticsRoutes from "./routes/analyticsRoutes.js";
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const morgan = require("morgan");
 
+// Load env vars
 dotenv.config();
-connectDB();
 
+// Initialize app
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
-// Analytics routes
+// Routes
+const authRoutes = require("./routes/authRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
+
+app.use("/api/auth", authRoutes);
 app.use("/api/analytics", analyticsRoutes);
 
-// Default route
+// Test route
 app.get("/", (req, res) => {
-  res.send("Civic Issue Tracker API is running...");
+    res.send("Civic Issue Tracker API is running ✅");
 });
 
+// Connect DB and Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+console.log("Loaded MONGO_URI:", process.env.MONGO_URI);
+
+mongoose.connect(process.env.MONGO_URI, {})
+    .then(() => {
+        console.log("✅ MongoDB Connected");
+        app.listen(PORT, () =>
+            console.log(`🚀 Server running on port ${PORT}`)
+        );
+    })
+    .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+
