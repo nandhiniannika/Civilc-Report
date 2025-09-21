@@ -1,4 +1,6 @@
 import Department from '../models/Department.js';
+// Import auth and admin middleware for route protection
+import { authMiddleware, adminOnly } from "../middleware/authMiddleware.js";
 
 export const createDepartment = async (req, res) => {
   try {

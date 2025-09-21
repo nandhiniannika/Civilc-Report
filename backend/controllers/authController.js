@@ -2,12 +2,12 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-// Test route
+// ✅ Test route
 export const testAuth = (req, res) => {
   res.send("Auth route working ✅");
 };
 
-// Register user
+// ✅ Register user
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -18,17 +18,31 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    user = new User({ name, email, password: hashedPassword, role: role || "user" });
+    user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role: role === "admin" ? "admin" : "citizen", // only admin/citizen allowed
+    });
+
     await user.save();
 
-    res.status(201).json({ message: "User registered successfully", user });
+    res.status(201).json({
+      message: "User registered successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (err) {
-    console.error(err.message);
+    console.error("Register error:", err.message);
     res.status(500).send("Server error");
   }
 };
 
-// Login user
+// ✅ Login user
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -45,9 +59,18 @@ export const loginUser = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.json({ message: "Login successful", token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (err) {
-    console.error(err.message);
+    console.error("Login error:", err.message);
     res.status(500).send("Server error");
   }
 };

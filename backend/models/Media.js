@@ -1,34 +1,15 @@
 import mongoose from "mongoose";
 
-const mediaSchema = new mongoose.Schema({
-  filename: {
-    type: String,
-    required: true,
+const mediaSchema = new mongoose.Schema(
+  {
+    filename: { type: String, required: true },      // unique filename from multer
+    originalName: { type: String },                  // original uploaded filename
+    fileType: { type: String },                      // MIME type
+    url: { type: String, required: true },          // store filename only
+    uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    report: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
   },
-  originalName: {
-    type: String,
-    required: true,
-  },
-  fileType: {
-    type: String,
-    required: true, // image/png, video/mp4 etc.
-  },
-  url: {
-    type: String,
-    required: true, // stored file path or cloud URL
-  },
-  uploadedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  report: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Report",
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true }
+);
 
 export default mongoose.model("Media", mediaSchema);

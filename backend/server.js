@@ -4,21 +4,26 @@ import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import path from "path";
+import { fileURLToPath } from "url";
 
-// Load environment variables from .env
+// Fix __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables
 dotenv.config();
 
 // Initialize Express app
 const app = express();
 
 // Middleware
-app.use(cors()); // Enable CORS for all origins
-app.use(express.json()); // Parse JSON request bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(morgan("dev")); // Logging HTTP requests
+app.use(cors()); 
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
+app.use(morgan("dev")); 
 
-// Serve static files from "uploads" folder
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+// ✅ Serve static files from "uploads" folder
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Import routes
 import authRoutes from "./routes/authRoutes.js";
@@ -68,7 +73,7 @@ mongoose
   })
   .then(() => {
     console.log("✅ MongoDB Connected");
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
   })
   .catch((err) => {
     console.error("❌ MongoDB Connection Error:", err);

@@ -1,18 +1,15 @@
 import express from 'express';
-import {
-  createCategory,
-  getCategories,
-  getCategoryById,
-  updateCategory,
-  deleteCategory,
-} from '../controllers/categoryController.js';
+import { authMiddleware, adminOnly } from '../middleware/authMiddleware.js';
+import { createCategory, getCategories, updateCategory, deleteCategory } from '../controllers/categoryController.js';
 
 const router = express.Router();
 
-router.post('/', createCategory);
+// A public route to get categories (so all users can see them on the report form)
 router.get('/', getCategories);
-router.get('/:id', getCategoryById);
-router.put('/:id', updateCategory);
-router.delete('/:id', deleteCategory);
+
+// All other category actions require admin privileges
+router.post('/', authMiddleware, adminOnly, createCategory);
+router.put('/:id', authMiddleware, adminOnly, updateCategory);
+router.delete('/:id', authMiddleware, adminOnly, deleteCategory);
 
 export default router;

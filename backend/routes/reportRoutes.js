@@ -1,24 +1,27 @@
 import express from "express";
 import {
-  listReports,
+  createReport,
+  getReports,
   getReport,
   updateStatus,
   assignReport,
-  deleteReport,
-  summary,
 } from "../controllers/reportController.js";
 import { authMiddleware, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// All admin routes require auth + admin role
-router.use(authMiddleware, adminOnly);
+// User routes
+// This route now correctly handles only the report data (no file upload)
+router.post("/", authMiddleware, createReport);
+// Consolidated getReports for both admin and users
+router.get("/", authMiddleware, getReports);
+// Get a single report
+router.get("/:id", authMiddleware, getReport);
 
-router.get("/", listReports);
-router.get("/summary", summary);
-router.get("/:id", getReport);
-router.patch("/:id/status", updateStatus);
-router.patch("/:id/assign", assignReport);
-router.delete("/:id", deleteReport);
+// Admin routes
+// Use PUT for a full resource update like a status change
+router.put("/:id/status", authMiddleware, adminOnly, updateStatus);
+// Use PUT for a full resource update like assigning a department
+router.put("/:id/assign", authMiddleware, adminOnly, assignReport);
 
 export default router;

@@ -3,29 +3,29 @@ import upload from "../utils/fileUpload.js";
 import {
   uploadMedia,
   getAllMedia,
+  getMediaByReport,
   deleteMedia,
-  getMediaByReport
 } from "../controllers/mediaController.js";
-import { authMiddleware, adminOnly } from "../middleware/authMiddleware.js"; // ✅ named imports
-
+import { authMiddleware, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Upload multiple files for a specific report
+// ✅ Upload a single file for a specific report
+// Field name should match the frontend form ("image")
 router.post(
   "/upload/:reportId",
   authMiddleware,
-  upload.array("files", 5), // maximum 5 files per report
+  upload.single("image"),
   uploadMedia
 );
 
-// Get all media files
+// ✅ Get all media (admin) or user-specific
 router.get("/", authMiddleware, getAllMedia);
 
-// Get all media files for a specific report
+// ✅ Get media by report
 router.get("/report/:reportId", authMiddleware, getMediaByReport);
 
-// Delete a media file by ID
+// ✅ Delete media
 router.delete("/:id", authMiddleware, deleteMedia);
 
 export default router;

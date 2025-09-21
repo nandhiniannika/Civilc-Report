@@ -2,73 +2,45 @@ import mongoose from "mongoose";
 
 const reportSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    title: { type: String, required: true },
+    description: { type: String },
     category: {
-      type: String,
-      required: true, // Example: "pothole", "streetlight", "garbage"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
     },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     status: {
       type: String,
-      enum: ["pending", "acknowledged", "in_progress", "resolved", "rejected", "closed"],
+      enum: ["pending", "in_progress", "resolved", "rejected"],
       default: "pending",
     },
+    priority: {
+      type: String,
+      enum: ["Low", "Medium", "High"],
+      default: "Medium",
+    },
     location: {
-      type: {
-        type: String,
-        enum: ["Point"],
-        default: "Point",
-      },
-      coordinates: {
-        type: [Number], // [longitude, latitude]
-        required: true,
-        validate: {
-          validator: (v) => v.length === 2,
-          message: "Coordinates must be [longitude, latitude]",
-        },
-      },
+      type: { type: String, default: "Point" },
+      coordinates: { type: [Number], required: true },
     },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    assignedTo: {
+    media: [{ type: mongoose.Schema.Types.ObjectId, ref: "Media" }],
+    // Add the department field
+    department: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Department",
     },
-    media: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Media",
-      },
-    ],
-    resolvedAt: {
-      type: Date,
-    },
     activity: [
       {
-        action: String,
-        actorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        actorName: String,
-        note: String,
-        createdAt: { type: Date, default: Date.now },
+        action: { type: String, required: true },
+        actorId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        actorName: { type: String },
+        note: { type: String },
+        timestamp: { type: Date, default: Date.now },
       },
     ],
   },
   { timestamps: true }
 );
 
-reportSchema.index({ location: "2dsphere" });
-
-const Report = mongoose.model("Report", reportSchema);
-
-export default Report;
+export default mongoose.model("Report", reportSchema);
